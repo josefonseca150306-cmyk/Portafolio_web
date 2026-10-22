@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>José Antonio Fonseca | Software Engineer</title>
+    
+    <!-- Tipografía Profesional -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- Iconos para Redes Sociales -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           VARIABLES DE TEMA (OSCURO Y CLARO)
+           ========================================= */
+        :root {
+            --bg-primary: #030712; 
+            --bg-secondary: rgba(10, 20, 40, 0.6);
+            --bg-tertiary: rgba(15, 30, 60, 0.8);
+            --accent-cyan: #00F0FF;
+            --text-primary: #FFFFFF;
+            --text-secondary: #94A3B8;
+            --border-subtle: rgba(0, 240, 255, 0.2);
+            --nav-height: 80px;
+            --aurora-1: rgba(0, 240, 255, 0.15);
+            --aurora-2: rgba(138, 43, 226, 0.12);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #F0F4F8;
+            --bg-secondary: rgba(255, 255, 255, 0.8);
+            --bg-tertiary: rgba(226, 232, 240, 0.9);
+            --accent-cyan: #0056B3;
+            --text-primary: #0F172A;
+            --text-secondary: #475569;
+            --border-subtle: rgba(0, 86, 179, 0.2);
+            --aurora-1: rgba(0, 86, 179, 0.1);
+            --aurora-2: rgba(138, 43, 226, 0.05);
+        }
+
+        *, *:before, *:after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-color: var(--bg-primary);
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* =========================================
+           ANIMACIÓN DE AURORA BOREAL
+           ========================================= */
+        .aurora-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -10; overflow: hidden; background: var(--bg-primary);
+            transition: background-color 0.4s ease;
+        }
+        .aurora-bg::before, .aurora-bg::after {
+            content: ""; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 50% 50%, var(--aurora-1), transparent 60%),
+                        radial-gradient(circle at 80% 20%, var(--aurora-2), transparent 50%);
+            animation: auroraMove 20s linear infinite alternate;
+            filter: blur(60px);
+            transition: background 0.4s ease;
+        }
+        .aurora-bg::after {
+            background: radial-gradient(circle at 30% 70%, var(--aurora-1), transparent 50%);
+            animation-duration: 25s; animation-direction: alternate-reverse;
+        }
+        @keyframes auroraMove {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        /* =========================================
+           HEADER & NAVEGACIÓN
+           ========================================= */
+        .site-header {
+            position: sticky; top: 0; z-index: 1000; height: var(--nav-height);
+            background-color: var(--bg-secondary); backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border-subtle);
+            display: flex; align-items: center; justify-content: space-between; padding: 0 8%;
+        }
+
+        /* Logo en Imagen */
+        .brand-logo img {
+            height: 50px; /* Ajusta este valor al tamaño de tu logo */
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        .brand-logo img:hover {
+            box-shadow: 0 0 15px var(--accent-cyan);
+            transform: scale(1.05);
+        }
+
+        .main-nav { display: flex; align-items: center; gap: 30px; }
+        .nav-links { display: flex; list-style: none; gap: 25px; margin: 0; padding: 0; }
+
+        .nav-link {
+            text-decoration: none; color: var(--text-secondary); font-size: 0.95rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s ease;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--accent-cyan); text-shadow: 0 0 10px var(--accent-cyan);
+        }
+
+        .controls-container button {
+            background: transparent; border: 1px solid var(--border-subtle); color: var(--text-primary);
+            cursor: pointer; transition: 0.3s; font-family: 'Orbitron', sans-serif;
+        }
+        .controls-container button:hover { border-color: var(--accent-cyan); box-shadow: 0 0 10px var(--accent-cyan); }
+
+        /* VISTAS SPA */
+        main { flex: 1; display: flex; flex-direction: column; }
+        .view-section { display: none; padding: 80px 8%; animation: floatUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .view-section.active { display: block; }
+        @keyframes floatUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* =========================================
+           VISTA 1: INICIO (HERO SECTION)
+           ========================================= */
+        #inicio.view-section.active { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - var(--nav-height)); }
+        .hero-container {
+            display: flex; flex-direction: row; align-items: center; justify-content: space-between;
+            max-width: 1300px; width: 100%; gap: 60px;
+        }
+        .hero-content { flex: 1; }
+
+        .hero-subtitle { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--accent-cyan); letter-spacing: 5px; text-transform: uppercase; margin-bottom: 10px; }
+        .hero-title { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 4rem; line-height: 1.1; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+        .hero-title .solid { color: var(--text-primary); }
+        .hero-title .outlined { color: transparent; -webkit-text-stroke: 2px var(--accent-cyan); text-shadow: 0 0 25px rgba(0, 240, 255, 0.3); }
+        [data-theme="light"] .hero-title .outlined { -webkit-text-stroke: 2px var(--accent-cyan); text-shadow: none; }
+
+        .hero-description { font-size: 1.15rem; color: var(--text-secondary); max-width: 600px; margin-bottom: 40px; line-height: 1.8; }
+
+        .btn-neon {
+            display: inline-flex; align-items: center; justify-content: center; background: var(--accent-cyan); color: #000;
+            font-family: 'Orbitron', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            padding: 16px 35px; border-radius: 6px; text-decoration: none; cursor: pointer; border: none;
+            transition: 0.3s ease; box-shadow: 0 0 20px rgba(0, 240, 255, 0.5); margin-right: 20px; margin-bottom: 15px;
+        }
+        .btn-neon:hover { background: var(--text-primary); box-shadow: 0 0 30px var(--text-primary); color: var(--bg-primary); }
+
+        .btn-outline {
+            display: inline-flex; align-items: center; justify-content: center; background: transparent; color: var(--accent-cyan);
+            font-family: 'Orbitron', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            padding: 14px 35px; border-radius: 6px; text-decoration: none; cursor: pointer; border: 2px solid var(--accent-cyan);
+            transition: 0.3s ease; margin-bottom: 15px;
+        }
+        .btn-outline:hover { background: rgba(0, 240, 255, 0.1); box-shadow: 0 0 20px rgba(0, 240, 255, 0.4); }
+
+        /* CIRCULO HUD ANIMADO (FOTO DE PERFIL) */
+        .hud-wrapper {
+            position: relative; width: 380px; height: 380px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .hud-ring-1 {
+            position: absolute; width: 100%; height: 100%; border-radius: 50%;
+            border: 2px solid var(--border-subtle);
+            border-top: 4px solid var(--accent-cyan);
+            border-bottom: 4px solid var(--accent-cyan);
+            animation: spin 10s linear infinite;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+        }
+        .hud-ring-2 {
+            position: absolute; width: 85%; height: 85%; border-radius: 50%;
+            border: 2px dashed var(--text-secondary);
+            border-left: 4px solid var(--accent-cyan);
+            animation: spin-reverse 15s linear infinite;
+        }
+        .hero-avatar-img {
+            width: 75%; height: 75%; border-radius: 50%; object-fit: cover; z-index: 5;
+            border: 3px solid var(--accent-cyan); background-color: var(--bg-tertiary);
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+
+        /* =========================================
+           TÍTULOS DE SECCIÓN
+           ========================================= */
+        .section-tag { font-family: 'Orbitron', sans-serif; color: var(--accent-cyan); font-size: 1rem; font-weight: 800; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 10px; }
+        .section-title { font-family: 'Orbitron', sans-serif; font-size: 3rem; font-weight: 900; margin-bottom: 40px; text-transform: uppercase; color: var(--text-primary); }
+
+        /* =========================================
+           VISTA 2: SOBRE MÍ (GRID 4x4)
+           ========================================= */
+        .skills-container {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 25px; margin-top: 40px;
+        }
+        .skill-card {
+            background-color: var(--bg-secondary); border: 1px solid var(--border-subtle); backdrop-filter: blur(10px);
+            border-radius: 12px; padding: 35px 20px; text-align: center;
+            position: relative; overflow: hidden; cursor: pointer; transition: 0.4s ease;
+        }
+        .skill-icon { font-size: 3rem; color: var(--accent-cyan); margin-bottom: 15px; }
+        .skill-title { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+        
+        .skill-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 240, 255, 0.95);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            opacity: 0; transition: 0.3s ease; transform: scale(0.9);
+        }
+        .skill-card:hover { border-color: var(--accent-cyan); box-shadow: 0 10px 30px rgba(0, 240, 255, 0.2); transform: translateY(-8px); }
+        .skill-card:hover .skill-overlay { opacity: 1; transform: scale(1); }
+        .cert-btn-text { color: #000; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 1.2rem; text-transform: uppercase; text-align: center;}
+
+        /* =========================================
+           VISTA 3: PORTAFOLIO
+           ========================================= */
+        .projects-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px; }
+        .project-card {
+            background-color: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 15px;
+            overflow: hidden; transition: 0.4s ease; backdrop-filter: blur(10px);
+        }
+        .project-card:hover { border-color: var(--accent-cyan); transform: translateY(-10px); box-shadow: 0 15px 40px rgba(0, 240, 255, 0.15); }
+        .project-img { width: 100%; height: 250px; object-fit: cover; border-bottom: 1px solid var(--border-subtle); }
+        .project-body { padding: 35px; }
+        .project-tags span { background: rgba(0, 240, 255, 0.1); color: var(--accent-cyan); padding: 6px 14px; border-radius: 6px; font-size: 0.85rem; font-weight: 700; margin-right: 10px; }
+
+        /* =========================================
+           VISTA 4: CONTACTO Y REDES
+           ========================================= */
+        .contact-layout { display: grid; grid-template-columns: 1.5fr 1fr; gap: 50px; align-items: center; }
+        
+        .contact-form-box {
+            background-color: var(--bg-secondary); border: 1px solid var(--border-subtle); backdrop-filter: blur(10px);
+            border-radius: 15px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; color: var(--accent-cyan); font-family: 'Orbitron', sans-serif; font-size: 0.9rem; letter-spacing: 1px; margin-bottom: 10px; }
+        
+        /* ILUMINACIÓN CIAN EN CAMPOS AL SELECCIONAR */
+        .form-control {
+            width: 100%; padding: 15px; background: var(--bg-tertiary); border: 1px solid var(--border-subtle);
+            color: var(--text-primary); border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 1rem; transition: 0.3s;
+        }
+        .form-control:focus { 
+            outline: none; border-color: var(--accent-cyan); 
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.5); 
+            background: rgba(0, 240, 255, 0.05); 
+        }
+
+        /* BURBUJAS DE REDES SOCIALES ANIMADAS */
+        .social-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; justify-items: center;
+        }
+        .social-circle {
+            width: 110px; height: 110px; border-radius: 50%;
+            background: var(--bg-secondary); border: 2px solid var(--border-subtle);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-decoration: none; color: var(--text-primary); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: levitate 4s ease-in-out infinite alternate;
+        }
+        .social-circle i { font-size: 2.8rem; margin-bottom: 8px; transition: 0.3s; }
+        .social-circle span { font-family: 'Orbitron', sans-serif; font-size: 0.8rem; letter-spacing: 1px; opacity: 0; transition: 0.3s; font-weight: bold;}
+
+        /* Colores y Hover por Red Social */
+        .social-circle.ig:hover { border-color: #E1306C; box-shadow: 0 0 30px rgba(225, 48, 108, 0.7); transform: scale(1.15); }
+        .social-circle.ig:hover i { color: #E1306C; }
+        
+        .social-circle.fb:hover { border-color: #1877F2; box-shadow: 0 0 30px rgba(24, 119, 242, 0.7); transform: scale(1.15); }
+        .social-circle.fb:hover i { color: #1877F2; }
+        
+        .social-circle.git:hover { border-color: var(--text-primary); box-shadow: 0 0 30px rgba(255, 255, 255, 0.5); transform: scale(1.15); }
+        .social-circle.git:hover i { color: var(--text-primary); }
+        
+        .social-circle.tk:hover { border-color: var(--accent-cyan); box-shadow: 0 0 30px var(--accent-cyan); transform: scale(1.15); }
+        .social-circle.tk:hover i { color: var(--accent-cyan); text-shadow: 2px 2px 0px #FF0050; }
+
+        .social-circle:hover span { opacity: 1; }
+
+        .social-circle:nth-child(1) { animation-delay: 0s; }
+        .social-circle:nth-child(2) { animation-delay: 1s; }
+        .social-circle:nth-child(3) { animation-delay: 2s; }
+        .social-circle:nth-child(4) { animation-delay: 0.5s; }
+
+        @keyframes levitate { 0% { transform: translateY(0); } 100% { transform: translateY(-20px); } }
+
+        /* =========================================
+           MODAL UNIVERSAL
+           ========================================= */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+            z-index: 2000; display: none; align-items: center; justify-content: center; opacity: 0; transition: 0.3s;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content {
+            background: var(--bg-secondary); padding: 40px; border-radius: 12px; max-width: 750px; width: 90%;
+            position: relative; border: 1px solid var(--accent-cyan); box-shadow: 0 0 40px rgba(0, 240, 255, 0.2);
+            max-height: 90vh; overflow-y: auto;
+        }
+        .modal-close { position: absolute; top: 20px; right: 20px; background: none; border: none; color: var(--text-primary); font-size: 2.5rem; cursor: pointer; transition: 0.2s; }
+        .modal-close:hover { color: var(--accent-cyan); transform: scale(1.2); }
+        .modal-img { width: 100%; max-height: 350px; object-fit: contain; border-radius: 8px; margin-bottom: 20px; background: var(--bg-primary); }
+
+        /* RESPONSIVO */
+        @media (max-width: 1024px) {
+            .skills-container { grid-template-columns: repeat(2, 1fr); }
+            .contact-layout { grid-template-columns: 1fr; }
+            .hero-title { font-size: 3rem; }
+            .hud-wrapper { width: 300px; height: 300px; }
+            .social-grid { display: flex; flex-wrap: wrap; justify-content: center; }
+        }
+        @media (max-width: 768px) {
+            .hero-container { flex-direction: column-reverse; text-align: center; }
+            .hero-actions { justify-content: center; }
+            .main-nav { position: absolute; top: var(--nav-height); left: 0; width: 100%; background: var(--bg-secondary); flex-direction: column; display: none; padding: 20px; border-bottom: 1px solid var(--accent-cyan); }
+            .main-nav.active { display: flex; }
+            .nav-links { flex-direction: column; width: 100%; text-align: center; }
+            .menu-toggle { display: block; background: transparent; border: none; color: var(--text-primary); font-size: 2rem; cursor: pointer; }
+            .projects-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- FONDO AURORA BOREAL -->
+    <div class="aurora-bg"></div>
+
+    <header class="site-header">
+        <!-- LOGO PERSONALIZADO (IMAGEN) -->
+        <div class="brand-logo" onclick="navigateTo('inicio')">
+            <img src="logo.png" alt="Logotipo JF" onerror="this.outerHTML='<span class=\'cyan\'>J</span>F<span class=\'cyan\'>_</span>'">
+        </div>
+
+        <button class="menu-toggle" id="menuToggle"><i class="fa-solid fa-bars"></i></button>
+
+        <nav class="main-nav" id="mainNav">
+            <ul class="nav-links">
+                <li><span class="nav-link active" data-target="inicio" onclick="navigateTo('inicio')" id="nav-inicio">Inicio</span></li>
+                <li><span class="nav-link" data-target="sobre-mi" onclick="navigateTo('sobre-mi')" id="nav-sobre">Sobre Mí</span></li>
+                <li><span class="nav-link" data-target="portafolio" onclick="navigateTo('portafolio')" id="nav-portafolio">Portafolio</span></li>
+                <li><span class="nav-link" data-target="contacto" onclick="navigateTo('contacto')" id="nav-contacto">Contacto</span></li>
+            </ul>
+
+            <div class="controls-container" style="display: flex; gap: 10px;">
+                <button id="themeToggle" title="Modo Oscuro/Claro" style="border-radius: 50%; width: 40px; height: 40px;">🌓</button>
+                <button id="langToggle" title="Idioma" style="border-radius: 4px; padding: 0 10px; height: 40px;">EN</button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- VISTA 1: INICIO -->
+        <section id="inicio" class="view-section active">
+            <div class="hero-container">
+                <div class="hero-content">
+                    <h2 class="hero-subtitle" id="hero-sub">Ingeniería de Software</h2>
+                    <h1 class="hero-title">
+                        <span class="solid">José Antonio</span><br>
+                        <span class="outlined">Fonseca</span>
+                    </h1>
+                    <p class="hero-description" id="hero-desc">
+                        El Universo Digital de la Ingeniería. Repositorio centralizado para la gestión de identidad profesional, trazabilidad de requerimientos y demostración de soluciones de software escalables y auditables.
+                    </p>
+                    <div class="hero-actions">
+                        <button class="btn-neon" onclick="navigateTo('portafolio')" id="btn-proyectos">Ver Proyectos</button>
+                        <button class="btn-outline" onclick="descargarCV()" id="btn-cv">Ver CV</button>
+                    </div>
+                </div>
+
+                <!-- CÍRCULO CON HUD ANIMADO -->
+                <div class="hud-wrapper">
+                    <div class="hud-ring-1"></div>
+                    <div class="hud-ring-2"></div>
+                    <img src="perfil.jpg" alt="Foto Profesional" class="hero-avatar-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 300 300\'><rect width=\'300\' height=\'300\' fill=\'%230A1526\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%2300F0FF\' font-size=\'40\' font-family=\'Orbitron\'>FOTO</text></svg>';">
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA 2: SOBRE MÍ -->
+        <section id="sobre-mi" class="view-section">
+            <div class="section-tag" id="tag-perfil">Perfil Técnico</div>
+            <h2 class="section-title" id="title-sobre">Sobre Mí</h2>
+            
+            <p id="bio-text" style="color: var(--text-secondary); font-size: 1.15rem; max-width: 900px; margin-bottom: 50px;">
+                Mi formación en la <strong>UAEM Tianguistenco</strong> se fundamenta en el rigor analítico y el modelado de arquitecturas de sistemas. Cuento con certificaciones y dominio técnico en el ciclo completo de vida del software, aseguramiento de calidad mediante IA y programación estructurada.
+            </p>
+
+            <!-- Habilidades en Grid 4x4 (8 Items) con Certificados Interactivos -->
+            <div class="skills-container">
+                <div class="skill-card" onclick="openCert('Java SE', 'cert_java.jpg')">
+                    <div class="skill-icon"><i class="fa-brands fa-java"></i></div><div class="skill-title">Java SE</div>
+                    <div class="skill-overlay"><span class="cert-btn-text">📜 Ver Certificado</span></div>
+                </div>
+                <div class="skill-card" onclick="openCert('Python', 'cert_python.jpg')">
+                    <div class="skill-icon"><i class="fa-brands fa-python"></i></div><div class="skill-title">Python</div>
+                    <div class="skill-overlay"><span class="cert-btn-text">📜 Ver Certificado</span></div>
+                </div>
+                <div class="skill-card" onclick="openCert('C / C++', 'cert_cpp.jpg')">
+                    <div class="skill-icon"><i class="fa-solid fa-code"></i></div><div class="skill-title">C / C++</div>
+                    <div class="skill-overlay"><span class="cert-btn-text">📜 Ver Certificado</span></div>
+                </div>
+                <div class="skill-card" onclick="openCert('MySQL', 'cert_sql.jpg')">
+                    <div class="skill-icon"><i class="fa-solid fa-database"></i></div><div class="skill-title">MySQL</div>
+                    <div class="skill-overlay"><span class="cert-btn-text">📜 Ver Certificado</span></div>
+                </div>
+                <div class="skill-card" onclick="openCert('UML & Requerimientos', 'cert_uml.jpg')">
+                    <div class="skill-icon"><i class="fa-solid fa-sitemap"></i></div><div class="skill-title">UML & IEEE 830</div>
+                    <div class="skill-overlay"><span class="cert-btn-text">📜 Ver Certificado</span></div>
+                </div>
+                <div class="skill-card" onclick="openCert('Git / GitHub', 'cert_git.jpg')">
+                    <div class="skill-icon"><i class="fa-brands fa-git-alt"></i></div><div class="skill-title">Git / GitHub</div>
+                    <div class="skill-overlay"><span class="cert-btn-text">📜 Ver Certificado</span></div>
+                </div>
+                <div class="skill-card" onclick="openCert('IA y Prompting', 'cert_ia.jpg')">
+                    <div class="skill-icon"><i class="fa-solid fa-robot"></i></div><div class="skill-title">IA y Prompting</div>
+                    <div class="skill-overlay"><span class="cert-btn-text">📜 Ver Certificado</span></div>
+                </div>
+                <div class="skill-card" onclick="openCert('Idiomas', 'cert_en.jpg')">
+                    <div class="skill-icon"><i class="fa-solid fa-language"></i></div><div class="skill-title" id="skill-lang">Idiomas</div>
+                    <div class="skill-overlay"><span class="cert-btn-text">📜 Ver Certificado</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA 3: PORTAFOLIO -->
+        <section id="portafolio" class="view-section">
+            <div class="section-tag" id="tag-showcase">Showcase</div>
+            <h2 class="section-title" id="title-soluciones">Soluciones de Software</h2>
+
+            <div class="projects-grid">
+                <!-- Optem -->
+                <article class="project-card">
+                    <img src="img_optem.jpg" alt="Optem" class="project-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 400 200\'><rect width=\'400\' height=\'200\' fill=\'%230A1526\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%2300F0FF\' font-family=\'Orbitron\'>[ Sistema Optem ]</text></svg>'">
+                    <div class="project-body">
+                        <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; font-family: 'Orbitron', sans-serif;">Optem Inteligente</h3>
+                        <div class="project-tags" style="margin-bottom: 20px;"><span class="tag">JavaFX</span><span class="tag">MySQL</span></div>
+                        <button class="btn-neon btn-ficha" style="padding: 12px; font-size: 0.9rem; width: 100%; margin:0;" onclick="openProject('optem')">Ficha Técnica Completa</button>
+                    </div>
+                </article>
+
+                <!-- JODA -->
+                <article class="project-card">
+                    <img src="img_joda.jpg" alt="JODA Language" class="project-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 400 200\'><rect width=\'400\' height=\'200\' fill=\'%230A1526\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%2300F0FF\' font-family=\'Orbitron\'>[ Compilador JODA ]</text></svg>'">
+                    <div class="project-body">
+                        <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; font-family: 'Orbitron', sans-serif;">Compilador JODA</h3>
+                        <div class="project-tags" style="margin-bottom: 20px;"><span class="tag">C++</span><span class="tag">Autómatas</span></div>
+                        <button class="btn-neon btn-ficha" style="padding: 12px; font-size: 0.9rem; width: 100%; margin:0;" onclick="openProject('joda')">Ficha Técnica Completa</button>
+                    </div>
+                </article>
+
+                <!-- Simulación -->
+                <article class="project-card">
+                    <img src="img_jaamsim.jpg" alt="Simulación" class="project-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 400 200\'><rect width=\'400\' height=\'200\' fill=\'%230A1526\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%2300F0FF\' font-family=\'Orbitron\'>[ Modelado Discreto ]</text></svg>'">
+                    <div class="project-body">
+                        <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; font-family: 'Orbitron', sans-serif;">Sistemas Discretos</h3>
+                        <div class="project-tags" style="margin-bottom: 20px;"><span class="tag">JaamSim</span><span class="tag">Estadística</span></div>
+                        <button class="btn-neon btn-ficha" style="padding: 12px; font-size: 0.9rem; width: 100%; margin:0;" onclick="openProject('jaamsim')">Ficha Técnica Completa</button>
+                    </div>
+                </article>
+
+                <!-- Biblioteca Virtual -->
+                <article class="project-card">
+                    <img src="img_biblioteca.jpg" alt="Biblioteca Virtual" class="project-img" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 400 200\'><rect width=\'400\' height=\'200\' fill=\'%230A1526\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%2300F0FF\' font-family=\'Orbitron\'>[ Biblioteca Virtual ]</text></svg>'">
+                    <div class="project-body">
+                        <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; font-family: 'Orbitron', sans-serif;">Biblioteca Virtual</h3>
+                        <div class="project-tags" style="margin-bottom: 20px;"><span class="tag">MVC</span><span class="tag">Bases de Datos</span></div>
+                        <button class="btn-neon btn-ficha" style="padding: 12px; font-size: 0.9rem; width: 100%; margin:0;" onclick="openProject('biblio')">Ficha Técnica Completa</button>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- VISTA 4: CONTACTO -->
+        <section id="contacto" class="view-section">
+            <div class="section-tag" id="tag-net">Networking</div>
+            <h2 class="section-title" id="title-contacto">Establecer Conexión</h2>
+
+            <div class="contact-layout">
+                <!-- FORMULARIO ENVIADO A CORREO DIRECTO -->
+                <div class="contact-form-box">
+                    <form action="mailto:josefonseca150306@gmail.com" method="POST" enctype="text/plain" id="contactForm">
+                        <div class="form-group">
+                            <label for="nombre" id="lbl-nombre">Nombre Completo</label>
+                            <input type="text" id="nombre" name="Nombre" class="form-control" placeholder="Ingresa tu nombre..." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="correo" id="lbl-correo">Correo Electrónico</label>
+                            <input type="email" id="correo" name="Correo" class="form-control" placeholder="usuario@dominio.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="asunto" id="lbl-asunto">Asunto del Mensaje</label>
+                            <input type="text" id="asunto" name="Asunto" class="form-control" placeholder="Propuesta, Contratación, etc." required>
+                        </div>
+                        <div class="form-group">
+                            <label for="mensaje" id="lbl-mensaje">Descripción de Proyecto</label>
+                            <textarea id="mensaje" name="Mensaje" rows="5" class="form-control" placeholder="Detalla los requerimientos o consulta..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn-neon" id="btn-enviar" style="width:100%; margin:0;">Enviar Mensaje</button>
+                    </form>
+                </div>
+
+                <!-- BURBUJAS SOCIALES ANIMADAS -->
+                <div class="social-grid">
+                    <a href="https://www.instagram.com/joseantfon15/" target="_blank" class="social-circle ig" title="Instagram">
+                        <i class="fa-brands fa-instagram"></i><span>Instagram</span>
+                    </a>
+                    <a href="https://www.facebook.com/jose.fonseca.147569/" target="_blank" class="social-circle fb" title="Facebook">
+                        <i class="fa-brands fa-facebook-f"></i><span>Facebook</span>
+                    </a>
+                    <a href="https://github.com/fonsecalab" target="_blank" class="social-circle git" title="GitHub">
+                        <i class="fa-brands fa-github"></i><span>GitHub</span>
+                    </a>
+                    <a href="https://www.tiktok.com/@jos.fonseca317" target="_blank" class="social-circle tk" title="TikTok">
+                        <i class="fa-brands fa-tiktok"></i><span>TikTok</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+        
+        <!-- MODAL UNIVERSAL PARA CERTIFICADOS Y PROYECTOS -->
+        <div id="universalModal" class="modal-overlay" onclick="closeModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+                <img id="modalImg" src="" class="modal-img">
+                <h2 id="modalTitle" style="color: var(--accent-cyan); font-family: 'Orbitron', sans-serif; font-size: 2rem; margin-bottom: 15px;"></h2>
+                <p id="modalDesc" style="color: var(--text-secondary); font-size: 1.1rem; line-height: 1.7; margin-bottom: 25px;"></p>
+                
+                <!-- Detalles Extendidos del Proyecto -->
+                <div id="projectMeta" style="display: none; background: rgba(0, 240, 255, 0.05); padding: 25px; border-radius: 10px; border: 1px solid var(--accent-cyan);">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <p><strong><i class="fa-solid fa-layer-group"></i> Arquitectura:</strong> <span id="modalArq" style="color:var(--text-primary);"></span></p>
+                        <p><strong><i class="fa-solid fa-database"></i> Datos:</strong> <span id="modalDB" style="color:var(--text-primary);"></span></p>
+                        <p><strong><i class="fa-solid fa-book-open"></i> Metodología:</strong> <span id="modalMet" style="color:var(--text-primary);"></span></p>
+                        <p><strong><i class="fa-solid fa-users"></i> Equipo:</strong> <span id="modalTeam" style="color:var(--text-primary);"></span></p>
+                    </div>
+                    <hr style="border: 0; border-top: 1px solid var(--border-subtle); margin: 15px 0;">
+                    <p style="font-size: 1.1rem;"><strong><i class="fa-solid fa-user-tie"></i> Mi Rol:</strong> <span id="modalRole" style="color:var(--accent-cyan); font-weight: bold;"></span></p>
+                    
+                    <h3 style="color: var(--text-primary); font-family: 'Orbitron', sans-serif; margin-top: 20px; font-size: 1.2rem;">Características Clave:</h3>
+                    <ul id="modalFeatures" style="color: var(--text-secondary); margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer style="text-align: center; padding: 20px; border-top: 1px solid var(--border-subtle); color: var(--text-secondary); font-size: 0.85rem; z-index: 10; position: relative;">
+        &copy; 2026 José Antonio Fonseca Labastida &bull; Facultad de Ingeniería de Software &bull; UAEM
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT -->
+    <script>
+        const EMBEDDED_PDF_BASE64 = "{B64_PDF_DATA}";
+
+        function descargarCV() {
+            try {
+                if(EMBEDDED_PDF_BASE64.includes("B64_PDF_DATA")) {
+                    alert("Aviso: Ejecuta empaquetar.py para inyectar tu CV real.");
+                    return;
+                }
+                const byteCharacters = atob(EMBEDDED_PDF_BASE64);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) byteNumbers[i] = byteCharacters.charCodeAt(i);
+                const blob = new Blob([new Uint8Array(byteNumbers)], { type: 'application/pdf' });
+                const blobUrl = URL.createObjectURL(blob);
+                window.open(blobUrl, '_blank');
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 2000);
+            } catch (err) { console.error("Error PDF:", err); }
+        }
+
+        function navigateTo(targetId) {
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(targetId).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.toggle('active', link.getAttribute('data-target') === targetId);
+            });
+            document.getElementById('mainNav').classList.remove('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // TEMA OSCURO/CLARO (100% FUNCIONAL)
+        const themeToggle = document.getElementById('themeToggle');
+        let isLight = false;
+        themeToggle.addEventListener('click', () => {
+            isLight = !isLight;
+            document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
+            themeToggle.textContent = isLight ? '🌙' : '🌓';
+        });
+
+        // CAMBIO DE IDIOMA EN VIVO (TEXTOS EXACTOS)
+        const langToggle = document.getElementById('langToggle');
+        let isEn = false;
+        
+        const translations = {
+            es: {
+                navInicio: "Inicio", navSobre: "Sobre Mí", navPortafolio: "Portafolio", navContacto: "Contacto",
+                heroSub: "Ingeniería de Software",
+                heroDesc: "El Universo Digital de la Ingeniería. Repositorio centralizado para la gestión de identidad profesional, trazabilidad de requerimientos y demostración de soluciones de software escalables y auditables.",
+                btnProyectos: "Ver Proyectos", btnCv: "Ver CV",
+                tagPerfil: "Perfil Técnico", titleSobre: "Sobre Mí",
+                bioText: "Mi formación en la <strong>UAEM Tianguistenco</strong> se fundamenta en el rigor analítico y el modelado de arquitecturas de sistemas. Cuento con certificaciones y dominio técnico en el ciclo completo de vida del software, aseguramiento de calidad mediante IA y programación estructurada.",
+                skillLang: "Idiomas", tagShowcase: "Showcase", titleSoluciones: "Soluciones de Software",
+                btnFicha: "Ficha Técnica Completa", tagNet: "Networking", titleContacto: "Establecer Conexión",
+                lblNombre: "Nombre Completo", lblCorreo: "Correo Electrónico", lblAsunto: "Asunto del Mensaje", lblMensaje: "Descripción de Proyecto", btnEnviar: "Enviar Mensaje"
+            },
+            en: {
+                navInicio: "Home", navSobre: "About Me", navPortafolio: "Portfolio", navContacto: "Contact",
+                heroSub: "Software Engineering",
+                heroDesc: "The Digital Universe of Engineering. Centralized repository for professional identity management, requirement traceability, and demonstration of scalable, auditable software solutions.",
+                btnProyectos: "View Projects", btnCv: "View CV",
+                tagPerfil: "Technical Profile", titleSobre: "About Me",
+                bioText: "My academic background at <strong>UAEM Tianguistenco</strong> is based on analytical rigor and system architecture modeling. I have certifications and technical domain in the full software lifecycle, QA using AI, and structured programming.",
+                skillLang: "Languages", tagShowcase: "Showcase", titleSoluciones: "Software Solutions",
+                btnFicha: "Complete Tech Sheet", tagNet: "Networking", titleContacto: "Establish Connection",
+                lblNombre: "Full Name", lblCorreo: "Email Address", lblAsunto: "Message Subject", lblMensaje: "Project Description", btnEnviar: "Send Message"
+            }
+        };
+
+        langToggle.addEventListener('click', () => {
+            isEn = !isEn;
+            langToggle.textContent = isEn ? 'ES' : 'EN';
+            const lang = isEn ? translations.en : translations.es;
+            
+            document.getElementById('nav-inicio').textContent = lang.navInicio;
+            document.getElementById('nav-sobre').textContent = lang.navSobre;
+            document.getElementById('nav-portafolio').textContent = lang.navPortafolio;
+            document.getElementById('nav-contacto').textContent = lang.navContacto;
+            document.getElementById('hero-sub').textContent = lang.heroSub;
+            document.getElementById('hero-desc').textContent = lang.heroDesc;
+            document.getElementById('btn-proyectos').textContent = lang.btnProyectos;
+            document.getElementById('btn-cv').textContent = lang.btnCv;
+            document.getElementById('tag-perfil').textContent = lang.tagPerfil;
+            document.getElementById('title-sobre').textContent = lang.titleSobre;
+            document.getElementById('bio-text').innerHTML = lang.bioText;
+            document.getElementById('skill-lang').textContent = lang.skillLang;
+            document.getElementById('tag-showcase').textContent = lang.tagShowcase;
+            document.getElementById('title-soluciones').textContent = lang.titleSoluciones;
+            document.querySelectorAll('.btn-ficha').forEach(btn => btn.textContent = lang.btnFicha);
+            document.getElementById('tag-net').textContent = lang.tagNet;
+            document.getElementById('title-contacto').textContent = lang.titleContacto;
+            document.getElementById('lbl-nombre').textContent = lang.lblNombre;
+            document.getElementById('lbl-correo').textContent = lang.lblCorreo;
+            document.getElementById('lbl-asunto').textContent = lang.lblAsunto;
+            document.getElementById('lbl-mensaje').textContent = lang.lblMensaje;
+            document.getElementById('btn-enviar').textContent = lang.btnEnviar;
+        });
+
+        // MODAL Y BASE DE DATOS DE PROYECTOS EXPANDIDA
+        const modal = document.getElementById('universalModal');
+        const mImg = document.getElementById('modalImg');
+        const mTitle = document.getElementById('modalTitle');
+        const mDesc = document.getElementById('modalDesc');
+        const pMeta = document.getElementById('projectMeta');
+        const pFeatures = document.getElementById('modalFeatures');
+
+        function openCert(skillName, imgFile) {
+            mImg.src = imgFile;
+            mImg.onerror = () => mImg.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='300'><rect width='600' height='300' fill='%23132238'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%2300F0FF' font-size='24' font-family='Orbitron'>[ FOTO CERTIFICADO ]</text></svg>";
+            mTitle.textContent = "Certificación: " + skillName;
+            mDesc.textContent = "Documento probatorio de acreditación técnica en la tecnología y/o framework seleccionado.";
+            pMeta.style.display = "none";
+            modal.classList.add('active');
+        }
+
+        const projectData = {
+            optem: { 
+                title: "Optem Inteligente", img: "img_optem.jpg", 
+                desc: "Sistema integral de optimización de horarios con accesibilidad por voz. Administra la asignación eficaz de tareas operativas integrando rutinas de gamificación y alertas en tiempo real.", 
+                arq: "Modelo Vista Controlador (MVC)", db: "MySQL Relacional", met: "Norma IEEE 830", team: "6 Ingenieros", role: "Director de Arquitectura",
+                features: ["✓ Implementación de comandos de voz interactivos.", "✓ Base de datos cifrada y normalizada en MySQL.", "✓ Interfaz intuitiva basada en JavaFX.", "✓ Mecanismos de recompensa y gamificación."]
+            },
+            joda: { 
+                title: "Compilador JODA", img: "img_joda.jpg", 
+                desc: "Desarrollo profundo de un compilador modular. Creación de tabla de tokens, analizador léxico, autómata de pila y parsing sintáctico para traducir código a instrucciones nativas.", 
+                arq: "Desacoplada en Fases", db: "N/A (C++ Nativo)", met: "Cascada Formal", team: "4 Analistas", role: "Desarrollador C++",
+                features: ["✓ Generación de diagramas Tombstone.", "✓ Árboles de derivación sintáctica (AST).", "✓ Gestión y manejo de errores léxicos.", "✓ Optimización de código objeto."]
+            },
+            jaamsim: { 
+                title: "Simulación Discreta", img: "img_jaamsim.jpg", 
+                desc: "Implementación matemática de modelos estocásticos y teoría de colas (M/M/1) utilizando JaamSim y ProModel para predecir y evitar cuellos de botella industriales.", 
+                arq: "Eventos Discretos", db: "Exportación de Datos CSV/Excel", met: "Espiral Iterativo", team: "3 Analistas", role: "Gestor de Simulación",
+                features: ["✓ Análisis de tiempos de ciclo y latencias.", "✓ Configuración de colas M/M/1 y M/M/2.", "✓ Detección proactiva de cuellos de botella.", "✓ Generación de reportes estadísticos."]
+            },
+            biblio: { 
+                title: "Biblioteca Virtual", img: "img_biblioteca.jpg", 
+                desc: "Plataforma digital para la gestión de préstamos de libros electrónicos. Incorpora sistema de perfiles de usuario, autenticación cifrada y control de inventarios mediante CRUD completo.", 
+                arq: "Arquitectura Cliente-Servidor", db: "MySQL", met: "Scrum (Sprints semanales)", team: "3 Desarrolladores", role: "Desarrollador Full Stack",
+                features: ["✓ Panel administrativo (CRUD) completo.", "✓ Autenticación de usuarios por contraseñas Hash.", "✓ Motor de búsqueda dinámica por autor y género.", "✓ Generación de reportes de morosidad."]
+            }
+        };
+
+        function openProject(id) {
+            const data = projectData[id];
+            mImg.src = data.img;
+            mImg.onerror = () => mImg.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='300'><rect width='600' height='300' fill='%23132238'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='%2300F0FF' font-size='24' font-family='Orbitron'>[ FOTO SISTEMA ]</text></svg>";
+            mTitle.textContent = data.title;
+            mDesc.textContent = data.desc;
+            
+            document.getElementById('modalArq').textContent = data.arq;
+            document.getElementById('modalDB').textContent = data.db;
+            document.getElementById('modalMet').textContent = data.met;
+            document.getElementById('modalTeam').textContent = data.team;
+            document.getElementById('modalRole').textContent = data.role;
+            
+            // Render features list
+            pFeatures.innerHTML = "";
+            data.features.forEach(f => {
+                const li = document.createElement('li');
+                li.textContent = f;
+                pFeatures.appendChild(li);
+            });
+
+            pMeta.style.display = "block";
+            modal.classList.add('active');
+        }
+
+        function closeModal() { modal.classList.remove('active'); }
+
+        document.getElementById('menuToggle').onclick = () => document.getElementById('mainNav').classList.toggle('active');
+        
+        // Evitar el comportamiento por defecto rápido para que se alcance a abrir la aplicación de correo (mailto)
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            setTimeout(() => { this.reset(); }, 2000);
+        });
+    </script>
+</body>
+</html>
